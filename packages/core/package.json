@@ -1,0 +1,32 @@
+{
+  "name": "@design-cli-dev/code",
+  "version": "1.0.0",
+  "description": "cli的核心代码",
+  "keywords": [
+    "cli"
+  ],
+  "author": "wangjiayan <765390818@qq.com>",
+  "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/packages/core#readme",
+  "license": "ISC",
+  "main": "lib/core.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wangjiayan-study/design-cli-dev.git"
+  },
+  "scripts": {
+    "test": "echo \"Run testing from code\""
+  },
+  "bugs": {
+    "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
+  },
+  "dependencies": {
+    "yargs": "^17.5.1"
+  }
+}

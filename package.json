@@ -1,0 +1,30 @@
+{
+  "name": "design-cli-dev",
+  "version": "1.0.0",
+  "description": "生成活动页的脚手架",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wangjiayan-study/design-cli-dev.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
+  },
+  "homepage": "https://github.com/wangjiayan-study/design-cli-dev#readme",
+  "dependencies": {
+    "learn": "^0.1.5"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  
+  "devDependencies": {
+    "lerna": "^5.4.3"
+  }
+}

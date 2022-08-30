@@ -1,6 +1,6 @@
 {
   "name": "@design-cli-dev/utils",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "cli的工具库",
   "author": "wangjiayan <765390818@qq.com>",
   "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/packages/utils#readme",

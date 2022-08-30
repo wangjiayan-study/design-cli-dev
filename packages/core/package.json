@@ -1,6 +1,6 @@
 {
   "name": "@design-cli-dev/code",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "cli的核心代码",
   "keywords": [
     "cli"
@@ -9,7 +9,7 @@
   "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/packages/core#readme",
   "license": "ISC",
   "bin": {
-    "design-cli-dev":"lib/core.js"
+    "design-cli-dev": "lib/core.js"
   },
   "directories": {
     "lib": "lib",

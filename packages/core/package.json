@@ -8,7 +8,9 @@
   "author": "wangjiayan <765390818@qq.com>",
   "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/packages/core#readme",
   "license": "ISC",
-  "main": "lib/core.js",
+  "bin": {
+    "design-cli-dev":"lib/core.js"
+  },
   "directories": {
     "lib": "lib",
     "test": "__tests__"

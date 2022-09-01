@@ -29,7 +29,8 @@
     "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
   },
   "dependencies": {
-    "yargs": "^17.5.1"
+    "yargs": "^17.5.1",
+    "@design-cli-dev/utils":"file:../../../utils/"
   },
   "gitHead": "219e8bba1f0b9730c22ab5e506d2b7cc70a1c1eb",
   "publishConfig": {

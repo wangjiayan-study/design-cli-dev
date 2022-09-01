@@ -1,5 +1,5 @@
 {
-  "name": "logs",
+  "name": "@design-cli-dev/logs",
   "version": "0.0.0",
   "description": "> TODO: description",
   "author": "wangjiayan <765390818@qq.com>",
@@ -22,5 +22,8 @@
   },
   "bugs": {
     "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
+  },
+  "dependencies": {
+    "npmlog": "^6.0.2"
   }
 }

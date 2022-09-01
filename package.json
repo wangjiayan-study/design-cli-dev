@@ -25,5 +25,8 @@
   ],
   "devDependencies": {
     "lerna": "^5.4.3"
+  },
+  "dependencies": {
+    "import-local": "^3.1.0"
   }
 }

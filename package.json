@@ -17,13 +17,12 @@
     "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
   },
   "homepage": "https://github.com/wangjiayan-study/design-cli-dev#readme",
-  "dependencies": {
-    "learn": "^0.1.5"
-  },
   "workspaces": [
-    "packages/*"
+    "core/*",
+    "commands/*",
+    "models/*",
+    "utils/*"
   ],
-  
   "devDependencies": {
     "lerna": "^5.4.3"
   }

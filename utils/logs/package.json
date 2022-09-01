@@ -1,0 +1,26 @@
+{
+  "name": "logs",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "wangjiayan <765390818@qq.com>",
+  "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/utils/logs#readme",
+  "license": "ISC",
+  "main": "lib/logs.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wangjiayan-study/design-cli-dev.git"
+  },
+  "scripts": {
+    "test": "node ./__tests__/logs.test.js"
+  },
+  "bugs": {
+    "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
+  }
+}

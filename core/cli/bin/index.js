@@ -1,5 +1,5 @@
 #!/usr/bin/env node 
-const lib = require('@design-cli-dev/utils')
+const utils= require('@design-cli-dev/utils')
 const yargs = require('yargs/yargs')
 // 得到参数
 const { hideBin } = require('yargs/helpers')

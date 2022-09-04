@@ -24,6 +24,7 @@
     "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
   },
   "dependencies": {
-    "npmlog": "^6.0.2"
+    "npmlog": "^6.0.2",
+    "userhome": "^1.0.0"
   }
 }

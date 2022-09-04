@@ -22,5 +22,8 @@
   },
   "bugs": {
     "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
+  },
+  "dependencies": {
+    "userhome": "^1.0.0"
   }
 }

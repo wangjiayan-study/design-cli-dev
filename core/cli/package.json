@@ -18,6 +18,14 @@
   "dependencies": {
     "@design-cli-dev/logs": "^0.0.0",
     "@design-cli-dev/utils": "^0.0.0",
+    "colors": "^1.4.0",
+    "get-npm-info": "^0.0.0",
+    "minimist": "^1.2.6",
+    "path-exists": "4.0.0",
+    "root-check": "^1.0.0",
+    "semver": "^7.3.7",
+    "url-join": "^5.0.0",
+    "userhome": "^1.0.0",
     "yargs": "^17.5.1"
   },
   "repository": {

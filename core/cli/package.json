@@ -19,6 +19,8 @@
     "@design-cli-dev/logs": "^0.0.0",
     "@design-cli-dev/utils": "^0.0.0",
     "colors": "^1.4.0",
+    "commander": "^9.4.0",
+    "dotenv": "^16.0.2",
     "get-npm-info": "^0.0.0",
     "minimist": "^1.2.6",
     "path-exists": "4.0.0",

@@ -12,7 +12,6 @@ function getDefaultRegister (isOrigin = true){
 async function getNpmInfo (pakgName, registry) {
     const registryUrl = registry || getDefaultRegister()
     const url = `${registryUrl}/${pakgName}`
-    console.log('url',url)
     try{
         const {status,data } = await axios.get(url)
         return status === 200 ? data : null

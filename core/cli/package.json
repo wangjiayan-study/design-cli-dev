@@ -16,6 +16,7 @@
     "lib"
   ],
   "dependencies": {
+    "@design-cli-dev/exec": "^0.0.0",
     "@design-cli-dev/logs": "^0.0.0",
     "@design-cli-dev/utils": "^0.0.0",
     "colors": "^1.4.0",

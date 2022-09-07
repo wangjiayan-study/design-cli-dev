@@ -25,5 +25,6 @@
   },
   "dependencies": {
     "userhome": "^1.0.0"
-  }
+  },
+  "gitHead": "36696352f348c473a0ddf4c11d00e035ad7c1ef3"
 }

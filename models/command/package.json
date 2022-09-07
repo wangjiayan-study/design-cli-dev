@@ -23,8 +23,10 @@
   "bugs": {
     "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
   },
-  "gitHead": "d0643d265e3ba4b987355f1b5f6355792bd3b3a7",
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "semver": "^7.3.7"
   }
 }

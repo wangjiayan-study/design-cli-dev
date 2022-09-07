@@ -1,6 +1,6 @@
 const log = require('@design-cli-dev/logs')
 const semver = require('semver')
-const { LOWEST_CODE_VERSION, DEFAULT_CLI_HOME}  = require('./const')
+const { DEFAULT_CLI_HOME}  = require('./const')
 const colors = require('colors/safe')
 const  { getNpmNewVersions }= require('get-npm-info')
 const dotenv = require('dotenv')
@@ -15,7 +15,6 @@ let userHomePath = userhome()
 
 async function prepare () {
 try {
-   checkNodeVersion()
    checkRoot()
    await checkUserHome()
    await checkPkgVersion()
@@ -53,16 +52,7 @@ async function checkPkgVersion (){
    }
 }
 
- /**
-  * 检查Node版本
-  */
-function checkNodeVersion () {
-    // 获取当前的Node版本号
-   const curVersion = process.version
-   if (semver.lte(curVersion,LOWEST_CODE_VERSION)) {
-      throw new Error(colors.red`请升级Node版本至v${LOWEST_CODE_VERSION}`)
-   }
-}
+
 
 function checkDebugMode () {
    var argv = require('minimist')(process.argv.slice(2));

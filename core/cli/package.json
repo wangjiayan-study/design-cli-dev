@@ -41,5 +41,8 @@
   "bugs": {
     "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
   },
-  "gitHead": "36696352f348c473a0ddf4c11d00e035ad7c1ef3"
+  "gitHead": "36696352f348c473a0ddf4c11d00e035ad7c1ef3",
+  "publishConfig": {
+    "access": "public"
+  }
 }

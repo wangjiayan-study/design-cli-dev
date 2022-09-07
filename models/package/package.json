@@ -31,5 +31,8 @@
     "path-exists": "^5.0.0",
     "pkg-dir": "^7.0.0"
   },
-  "gitHead": "36696352f348c473a0ddf4c11d00e035ad7c1ef3"
+  "gitHead": "36696352f348c473a0ddf4c11d00e035ad7c1ef3",
+  "publishConfig": {
+    "access": "public"
+  }
 }

@@ -74,7 +74,7 @@ class Package {
     async install () {
         try {
             await this._prepare()
-            npminstall({
+            await npminstall({
                 root: this.targetPath,
                 storeDir: this.storeDir,
                 pkgs: [{

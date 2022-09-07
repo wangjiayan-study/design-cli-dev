@@ -2,6 +2,6 @@
 
 module.exports = create;
 
-function create() {
+function create(args) {
     return "Hello from create";
 }

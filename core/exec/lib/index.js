@@ -2,6 +2,7 @@
 const path = require('node:path')
 const log = require('@design-cli-dev/logs')
 const Package = require('@design-cli-dev/package')
+const cp = require('node:child_process')
 module.exports = exec;
 
 const PACKAGES_NAME= {
@@ -58,11 +59,26 @@ async function exec () {
     // 得到pkg包的入口文件,并调用
     const rootFile = await pkg.getRootFilePath()
     if (rootFile){
-        require(rootFile)
+        // 优化：这里开启子进程去调用
+        const code = `require('${rootFile}').call(null,${JSON.stringify({"test":'我是参数'})})`
+        // node直接执行代码：node -e require(xxx)
+        const child = cp.spawn('node',['-e',code], {
+            // 子进程的工作目录
+            cwd: process.cwd(),
+            // 通过相应的标准输入输出流到/从父进程
+            stdio: 'inherit',
+        })
+        child.on('error', e => {
+            log.error(e.message);
+            process.exit(1);
+          });
+        child.on('exit', e => {
+        log.verbose('命令执行成功:' + e);
+        process.exit(e);
+        });
     }else{
-        log.error('找不到入口文件',`请检查包${pkgName}是否指定入口文件`)
+        log.error('找不到npm包的入口文件',`请检查包${pkgName}是否指定入口文件`)
     }
-    console.log('rootFile',rootFile)
  
 
 } catch(err){

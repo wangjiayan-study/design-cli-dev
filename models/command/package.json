@@ -1,7 +1,7 @@
 {
   "name": "@design-cli-dev/command",
-  "version": "0.0.6-alpha.0",
-  "description": "> TODO: description",
+  "version": "0.0.7-alpha.0",
+  "description": "脚手架的命令行基类",
   "author": "wangjiayan <765390818@qq.com>",
   "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/models/command#readme",
   "license": "ISC",

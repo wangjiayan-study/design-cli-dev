@@ -1,7 +1,7 @@
 {
   "name": "@design-cli-dev/exec",
   "version": "0.0.6-alpha.0",
-  "description": "> TODO: description",
+  "description": "动态分析执行命令，根据命令加载相应的npm包",
   "author": "wangjiayan <765390818@qq.com>",
   "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/core/exec#readme",
   "license": "ISC",

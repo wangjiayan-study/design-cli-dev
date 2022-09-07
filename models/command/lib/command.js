@@ -1,5 +1,7 @@
 'use strict';
+const semver = require('semver')
 const LOWEST_CODE_VERSION = '12.0.0'
+
 class Command {
     constructor (argv) {
         if (!argv){

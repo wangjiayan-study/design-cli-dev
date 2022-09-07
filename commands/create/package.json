@@ -1,7 +1,7 @@
 {
   "name": "@design-cli-dev/create",
   "version": "0.0.6-alpha.0",
-  "description": "> TODO: description",
+  "description": "create命令的默认包",
   "author": "wangjiayan <765390818@qq.com>",
   "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/core/create#readme",
   "license": "ISC",
@@ -25,5 +25,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@design-cli-dev/command": "^0.0.7-alpha.0"
   }
 }

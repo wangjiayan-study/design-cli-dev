@@ -58,6 +58,7 @@ async function exec () {
     }
     // 得到pkg包的入口文件,并调用
     const rootFile = await pkg.getRootFilePath()
+    log.verbose('rootFile', rootFile)
     if (rootFile){
         // 优化：这里开启子进程去调用
         const code = `require('${rootFile}').call(null,${JSON.stringify({"test":'我是参数'})})`
@@ -65,7 +66,9 @@ async function exec () {
         const child = cp.spawn('node',['-e',code], {
             // 子进程的工作目录
             cwd: process.cwd(),
-            // 通过相应的标准输入输出流到/从父进程
+            // inherit:通过相应的标准输入输出流到/从父进程
+            // 如果是ignore,就只能执行命令，不能输入输出
+            // pipe 的话，子进程只能读不能写，是单向的。
             stdio: 'inherit',
         })
         child.on('error', e => {

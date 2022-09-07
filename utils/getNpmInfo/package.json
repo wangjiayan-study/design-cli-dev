@@ -1,6 +1,6 @@
 {
   "name": "get-npm-info",
-  "version": "0.0.1",
+  "version": "0.0.2-alpha.0",
   "description": "> TODO: description",
   "author": "wangjiayan <765390818@qq.com>",
   "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/utils/getNpmInfo#readme",
@@ -24,7 +24,7 @@
     "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
   },
   "dependencies": {
-    "@design-cli-dev/logs": "^0.0.1",
+    "@design-cli-dev/logs": "^0.0.2-alpha.0",
     "axios": "^0.27.2",
     "semver": "^7.3.7",
     "url-join": "^5.0.0",

@@ -2,7 +2,7 @@ const log = require('@design-cli-dev/logs')
 const semver = require('semver')
 const { LOWEST_CODE_VERSION, DEFAULT_CLI_HOME}  = require('./const')
 const colors = require('colors/safe')
-const  { getNpmLastVersion }= require('get-npm-info')
+const  { getNpmNewVersions }= require('get-npm-info')
 const dotenv = require('dotenv')
 const path = require('node:path')
 
@@ -47,7 +47,7 @@ const pkg = require('./package.json')
  */
 async function checkPkgVersion (){
    const {name, version} = pkg
-   const list = await getNpmLastVersion('@design-cli-dev/code',version)
+   const list = await getNpmNewVersions('@design-cli-dev/code',version)
    if (list?.length){
       log.warn(colors.yellow(`您当前的版本是${version}，请手动更新${name}到最新版本v${list[0]}`))
    }

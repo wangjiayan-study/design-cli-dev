@@ -24,8 +24,11 @@
     "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
   },
   "dependencies": {
+    "@design-cli-dev/format-path": "^0.0.0",
     "@design-cli-dev/logs": "^0.0.0",
+    "fs-extra": "^10.1.0",
     "npminstall": "^6.5.1",
-    "path-exists": "^5.0.0"
+    "path-exists": "^5.0.0",
+    "pkg-dir": "^7.0.0"
   }
 }

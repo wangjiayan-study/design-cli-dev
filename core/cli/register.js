@@ -15,7 +15,7 @@ function registerCommander () {
     .description('搭建海报模板的脚手架项目')
     .version(version)
     .option('-d, --debug','是否开启debug模式', false)
-    .option('-tp, --targetPath <targetPath>','指定自定义包的目录')
+    .option('-tp, --targetPath <targetPath>','指定自定义包的目录','')
 
     program
     .command('create <appName>')

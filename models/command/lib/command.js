@@ -13,6 +13,7 @@ class Command {
         if (argv.length < 1) {
             throw new Error('参数列表为空！');
           }
+          this._argv = argv;
         const runner = new Promise ((resolve,reject) => {
             let chain = Promise.resolve()
             chain = chain.then(()=>this.checkNodeVersion())
@@ -37,7 +38,8 @@ class Command {
    }
 }
     initArgs (){
-
+        this._cmd = this._argv[this._argv.length - 1];
+        this._argv = this._argv.slice(0, this._argv.length - 1);
     }
     init(){
         throw new Error('init方法必须实现')

@@ -6,7 +6,6 @@ const cp = require('node:child_process')
 module.exports = exec;
 
 const PACKAGES_NAME= {
-    // create: '@design-cli-dev/code',
     create: '@design-cli-dev/create',
     publish: '@design-cli-dev/publish'
 }
@@ -61,7 +60,19 @@ async function exec () {
     log.verbose('rootFile', rootFile)
     if (rootFile){
         // 优化：这里开启子进程去调用
-        const code = `require('${rootFile}').call(null,${JSON.stringify({"test":'我是参数'})})`
+        const args = Array.from(arguments);
+        const cmd = args[args.length - 1];
+        const o = Object.create(null);
+        // 因为这里是执行子模块，所以把父级命令行的参数都去掉
+        Object.keys(cmd).forEach(key => {
+          if (cmd.hasOwnProperty(key) &&
+          !key.startsWith('_') &&
+            key !== 'parent') {
+            o[key] = cmd[key];
+          }
+        });
+        args[args.length - 1] = o;
+        const code = `require('${rootFile}').call(null,${JSON.stringify(args)})`
         // node直接执行代码：node -e require(xxx)
         const child = cp.spawn('node',['-e',code], {
             // 子进程的工作目录
@@ -74,7 +85,7 @@ async function exec () {
         child.on('error', e => {
             log.error(e.message);
             process.exit(1);
-          });
+        });
         child.on('exit', e => {
         log.verbose('命令执行成功:' + e);
         process.exit(e);
@@ -87,7 +98,4 @@ async function exec () {
 } catch(err){
     throw new Error(err)
 }
-
-
-
 }

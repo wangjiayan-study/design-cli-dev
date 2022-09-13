@@ -1,11 +1,11 @@
 {
-  "name": "@design-cli-dev/exec",
+  "name": "@design-cli-dev/request",
   "version": "0.0.6",
-  "description": "动态分析执行命令，根据命令加载相应的npm包",
+  "description": "> TODO: description",
   "author": "wangjiayan <765390818@qq.com>",
-  "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/core/exec#readme",
+  "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/utils/request#readme",
   "license": "ISC",
-  "main": "lib/index.js",
+  "main": "lib/request.js",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -18,16 +18,12 @@
     "url": "git+https://github.com/wangjiayan-study/design-cli-dev.git"
   },
   "scripts": {
-    "test": "node ./__tests__/exec.test.js"
+    "test": "node ./__tests__/request.test.js"
   },
   "bugs": {
     "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "gitHead": "36696352f348c473a0ddf4c11d00e035ad7c1ef3",
   "dependencies": {
-    "@design-cli-dev/request": "^0.0.6"
+    "axios": "^0.27.2"
   }
 }

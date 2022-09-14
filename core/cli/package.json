@@ -1,6 +1,6 @@
 {
   "name": "@design-cli-dev/core",
-  "version": "0.0.6",
+  "version": "0.1.0-alpha.0",
   "description": "> TODO: description",
   "author": "wangjiayan <765390818@qq.com>",
   "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/core/core#readme",
@@ -16,9 +16,9 @@
     "lib"
   ],
   "dependencies": {
-    "@design-cli-dev/exec": "^0.0.6",
+    "@design-cli-dev/exec": "^0.1.0-alpha.0",
     "@design-cli-dev/logs": "^0.0.6-alpha.0",
-    "@design-cli-dev/utils": "^0.0.6-alpha.0",
+    "@design-cli-dev/utils": "^0.1.0-alpha.0",
     "colors": "^1.4.0",
     "commander": "^9.4.0",
     "dotenv": "^16.0.2",

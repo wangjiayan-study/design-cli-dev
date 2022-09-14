@@ -1,6 +1,6 @@
 {
   "name": "@design-cli-dev/package",
-  "version": "0.0.6",
+  "version": "0.1.0-alpha.0",
   "description": "动态创建npm包类，可以下载并缓存到本地，并提供入口文件的引入",
   "author": "wangjiayan <765390818@qq.com>",
   "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/models/package#readme",

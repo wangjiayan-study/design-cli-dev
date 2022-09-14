@@ -1,6 +1,6 @@
 {
   "name": "@design-cli-dev/exec",
-  "version": "0.0.6",
+  "version": "0.1.0-alpha.0",
   "description": "动态分析执行命令，根据命令加载相应的npm包",
   "author": "wangjiayan <765390818@qq.com>",
   "homepage": "https://github.com/wangjiayan-study/design-cli-dev/tree/main/core/exec#readme",
@@ -28,6 +28,6 @@
   },
   "gitHead": "36696352f348c473a0ddf4c11d00e035ad7c1ef3",
   "dependencies": {
-    "@design-cli-dev/request": "^0.0.6"
+    "@design-cli-dev/request": "^0.1.0-alpha.0"
   }
 }

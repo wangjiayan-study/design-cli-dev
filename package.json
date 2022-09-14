@@ -27,6 +27,7 @@
     "lerna": "^5.4.3"
   },
   "dependencies": {
+    "imooc-cli": "^3.0.0",
     "import-local": "^3.1.0"
   }
 }

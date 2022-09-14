@@ -6,9 +6,13 @@ const fse = require("fs-extra");
 const log = require("@design-cli-dev/logs");
 const semver = require("semver");
 const getProjectTemplate = require("./getProjectTemplate");
-const { verbose } = require("@design-cli-dev/logs");
+const Package = require("@design-cli-dev/package");
+const userhome = require("userhome");
+const { spinnerStart, sleep } = require("@design-cli-dev/utils");
 const TYPE_PROJECT = "project";
 const TYPE_COMPONENT = "component";
+const DEFAULT_CLI_HOME = ".design-cli-dev";
+const userHome = userhome();
 class Create extends Command {
   init() {
     this.projectName = this._argv[0] || "";
@@ -21,6 +25,9 @@ class Create extends Command {
       // 1. 准备阶段
       await this.prepare();
       // 2. 下载模板
+      await this.downloadTemplate();
+      // 3. 安装模板：把模板复制到执行目录，并执行安装和启动
+      await this.installTemplate();
     } catch (err) {
       throw new Error(err);
     }
@@ -46,13 +53,61 @@ class Create extends Command {
         },
       ]);
       if (isContinue) {
-        fse.emptyDir(process.cwd());
+        await fse.emptyDir(process.cwd());
       }
     }
     // 3. 选择创建项目或组件
     return this.getProjectInfo();
   }
+  async downloadTemplate() {
+    const { projectTemplate } = this.projectInfo;
+    const templateInfo = this.template.find(
+      (item) => item.npmName === projectTemplate
+    );
 
+    const targetPath = path.resolve(userHome, DEFAULT_CLI_HOME, "template");
+    const storeDir = path.resolve(
+      userHome,
+      DEFAULT_CLI_HOME,
+      "template",
+      "node_modules"
+    );
+    const { npmName, version } = templateInfo;
+    this.templateInfo = templateInfo;
+    this.templateNpm = new Package({
+      targetPath,
+      storePath: storeDir,
+      pkgName: npmName,
+      packageVersion: version,
+    });
+    if (!(await this.templateNpm.exist())) {
+      const spinner = spinnerStart("正在下载模板...");
+      await sleep();
+      try {
+        await this.templateNpm.install();
+      } catch (e) {
+        throw e;
+      } finally {
+        spinner.stop(true);
+        if (await this.templateNpm.exist()) {
+          log.success("下载模板成功");
+        }
+      }
+    } else {
+      const spinner = spinnerStart("正在更新模板...");
+      try {
+        await this.templateNpm.update();
+      } catch (e) {
+        throw e;
+      } finally {
+        spinner.stop(true);
+        if (await this.templateNpm.exist()) {
+          console.log("我执行了");
+          log.success("更新模板成功");
+        }
+      }
+    }
+  }
   async getProjectInfo() {
     this.projectInfo = {};
     // 1. 选择创建项目或组件
@@ -130,6 +185,23 @@ class Create extends Command {
     }
     return this.projectInfo;
   }
+  async installTemplate() {
+    console.log("installTemplate");
+    const { type: tplType } = this.templateInfo;
+    // 区分是否自定义模板
+    if (tplType === "normal") {
+      await this.installDefaultTpl();
+    } else {
+      await this.installCustomTpl();
+    }
+  }
+  async installDefaultTpl() {
+    // 1、复制模板到本地路径
+    console.log("cacheFilePath", this.templateNpm.cacheFilePath);
+    // this.templateNpm.getRootFilePath;
+    // 安装依赖，然后启动
+  }
+
   async _getProjectType() {
     const { type } = await inquirer.prompt({
       type: "list",
@@ -199,7 +271,6 @@ class Create extends Command {
     const fileList = fs.readdirSync(localPath);
     return !!fileList?.length;
   }
-  downloadTemplate() {}
 }
 
 function init(args) {

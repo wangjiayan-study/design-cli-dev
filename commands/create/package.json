@@ -30,8 +30,11 @@
     "@design-cli-dev/command": "^0.0.6",
     "@design-cli-dev/logs": "^0.0.6-alpha.0",
     "@design-cli-dev/request": "^0.0.6",
+    "@design-cli-dev/utils": "^0.0.6",
+    "Package": "^0.0.1",
     "fs-extra": "^10.1.0",
     "inquirer": "^8.0.0",
-    "semver": "^7.3.7"
+    "semver": "^7.3.7",
+    "userhome": "^1.0.0"
   }
 }

@@ -32,8 +32,11 @@
     "@design-cli-dev/request": "^0.1.0-alpha.0",
     "@design-cli-dev/utils": "^0.1.0-alpha.0",
     "Package": "^0.0.1",
+    "ejs": "^3.1.8",
     "fs-extra": "^10.1.0",
+    "glob": "^8.0.3",
     "inquirer": "^8.0.0",
+    "kebab-case": "^1.0.1",
     "semver": "^7.3.7",
     "userhome": "^1.0.0"
   }

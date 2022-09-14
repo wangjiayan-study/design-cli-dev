@@ -8,11 +8,14 @@ const semver = require("semver");
 const getProjectTemplate = require("./getProjectTemplate");
 const Package = require("@design-cli-dev/package");
 const userhome = require("userhome");
+const glob = require("glob");
 const { spinnerStart, sleep, execAsync } = require("@design-cli-dev/utils");
+const ejs = require("ejs");
 const TYPE_PROJECT = "project";
 const TYPE_COMPONENT = "component";
 const DEFAULT_CLI_HOME = ".design-cli-dev";
 const userHome = userhome();
+
 class Create extends Command {
   init() {
     this.projectName = this._argv[0] || "";
@@ -182,6 +185,19 @@ class Create extends Command {
         ...component,
       };
     }
+    // 生成classname
+    if (this.projectInfo.projectName) {
+      this.projectInfo.name = this.projectInfo.projectName;
+      this.projectInfo.className = require("kebab-case")(
+        this.projectInfo.projectName
+      ).replace(/^-/, "");
+    }
+    if (this.projectInfo.projectVersion) {
+      this.projectInfo.version = this.projectInfo.projectVersion;
+    }
+    if (this.projectInfo.componentDescription) {
+      this.projectInfo.description = this.projectInfo.componentDescription;
+    }
     return this.projectInfo;
   }
   async installTemplate() {
@@ -199,23 +215,66 @@ class Create extends Command {
     const sourcePath = path.resolve(this.templateNpm.cacheFilePath, "template");
     await fse.copy(sourcePath, process.cwd());
     log.verbose("模板已经复制到当前目录");
-    // 2、安装依赖
+    // 2、ejs渲染
+    await this.ejsRender({
+      ignore: ["**/node_modules/**", "**/public/**"],
+    });
+    // 3、安装依赖
     const { installCommand, startCommand } = this.templateInfo;
     await this.execInstall(installCommand);
-    // 3、启动项目
+    // 4、启动项目
     await this.execStart(startCommand);
+  }
+  async ejsRender(options) {
+    const dir = process.cwd();
+    const projectInfo = this.projectInfo;
+    return new Promise((resolve, reject) => {
+      glob(
+        "**",
+        {
+          cwd: dir,
+          ignore: options.ignore || "",
+          nodir: true,
+        },
+        function (err, files) {
+          if (err) {
+            reject(err);
+          }
+          return Promise.all(
+            files.map((file) => {
+              return new Promise((resolve1, reject1) => {
+                const filePath = path.resolve(dir, file);
+
+                ejs.renderFile(filePath, projectInfo, (err, data) => {
+                  if (err) {
+                    console.log("err", err);
+                    reject1(err);
+                  }
+                  fse.writeFileSync(filePath, data);
+                  resolve1(data);
+                });
+              });
+            })
+          )
+            .then(() => {
+              resolve();
+            })
+            .catch(() => {
+              reject();
+            });
+        }
+      );
+    });
   }
   async execStart(startCommand) {
     if (startCommand) {
       log.info("执行启动命令", startCommand);
-      const spinner = spinnerStart("执行启动命令...");
       await sleep();
       await this.execCommand(startCommand, "启动命令执行失败")
         .catch((err) => {
           throw new Error(err);
         })
         .finally(() => {
-          spinner.stop();
           log.success("安装安装成功");
         });
     } else {

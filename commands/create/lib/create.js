@@ -8,7 +8,7 @@ const semver = require("semver");
 const getProjectTemplate = require("./getProjectTemplate");
 const Package = require("@design-cli-dev/package");
 const userhome = require("userhome");
-const { spinnerStart, sleep } = require("@design-cli-dev/utils");
+const { spinnerStart, sleep, execAsync } = require("@design-cli-dev/utils");
 const TYPE_PROJECT = "project";
 const TYPE_COMPONENT = "component";
 const DEFAULT_CLI_HOME = ".design-cli-dev";
@@ -102,7 +102,6 @@ class Create extends Command {
       } finally {
         spinner.stop(true);
         if (await this.templateNpm.exist()) {
-          console.log("我执行了");
           log.success("更新模板成功");
         }
       }
@@ -186,7 +185,6 @@ class Create extends Command {
     return this.projectInfo;
   }
   async installTemplate() {
-    console.log("installTemplate");
     const { type: tplType } = this.templateInfo;
     // 区分是否自定义模板
     if (tplType === "normal") {
@@ -198,10 +196,71 @@ class Create extends Command {
   async installDefaultTpl() {
     // 1、复制模板到本地路径
     console.log("cacheFilePath", this.templateNpm.cacheFilePath);
-    // this.templateNpm.getRootFilePath;
-    // 安装依赖，然后启动
+    const sourcePath = path.resolve(this.templateNpm.cacheFilePath, "template");
+    await fse.copy(sourcePath, process.cwd());
+    log.verbose("模板已经复制到当前目录");
+    // 2、安装依赖
+    const { installCommand, startCommand } = this.templateInfo;
+    await this.execInstall(installCommand);
+    // 3、启动项目
+    await this.execStart(startCommand);
   }
-
+  async execStart(startCommand) {
+    if (startCommand) {
+      log.info("执行启动命令", startCommand);
+      const spinner = spinnerStart("执行启动命令...");
+      await sleep();
+      await this.execCommand(startCommand, "启动命令执行失败")
+        .catch((err) => {
+          throw new Error(err);
+        })
+        .finally(() => {
+          spinner.stop();
+          log.success("安装安装成功");
+        });
+    } else {
+      throw new Error("该安装没有配置安装命令");
+    }
+  }
+  async execInstall(installCommand) {
+    if (installCommand) {
+      log.info("执行启动命令", installCommand);
+      const spinner = spinnerStart("执行安装命令...");
+      await sleep();
+      await this.execCommand(installCommand, "安装命令执行失败")
+        .catch((err) => {
+          throw new Error(err);
+        })
+        .finally(() => {
+          spinner.stop();
+          log.success("模板安装成功");
+        });
+    } else {
+      throw new Error("该模板没有配置安装命令");
+    }
+  }
+  /**
+   * 例如npm install,npm是command,install是参数
+   * @param {*} command
+   */
+  async execCommand(command, errMsg) {
+    if (command) {
+      const cmdArray = command.split(" ");
+      const cmd = cmdArray[0];
+      if (!cmd) {
+        throw new Error("命令不存在！命令：" + command);
+      }
+      const args = cmdArray.slice(1);
+      log.verbose("cmd", cmd, args);
+      const ret = await execAsync(cmd, args, {
+        stdio: "inherit",
+        cwd: process.cwd(),
+      });
+      if (ret !== 0) {
+        throw new Error(errMsg);
+      }
+    }
+  }
   async _getProjectType() {
     const { type } = await inquirer.prompt({
       type: "list",

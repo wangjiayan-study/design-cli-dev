@@ -5,6 +5,8 @@ const Spinner = require("cli-spinner").Spinner;
 module.exports = {
   spinnerStart,
   sleep,
+  exec,
+  execAsync,
 };
 
 function sleep(timeout = 1000) {
@@ -16,4 +18,24 @@ function spinnerStart(msg) {
   spinner.setSpinnerString("|/-\\");
   spinner.start();
   return spinner;
+}
+
+function exec(command, commandArgs, options) {
+  const win32 = process.platform === "win32";
+  const cmd = win32 ? "cmd" : command;
+  const cmdArgs = win32 ? ["/c"].concat(command, args) : commandArgs;
+  const { spawn } = require("child_process");
+  return spawn(cmd, cmdArgs, options || {});
+}
+
+function execAsync(command, commandArgs, options) {
+  return new Promise((resolve, reject) => {
+    const p = exec(command, commandArgs, options);
+    p.on("error", (e) => {
+      reject(e);
+    });
+    p.on("exit", (c) => {
+      resolve(c);
+    });
+  });
 }

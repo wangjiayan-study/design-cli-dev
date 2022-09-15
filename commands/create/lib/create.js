@@ -19,7 +19,7 @@ const userHome = userhome();
 class Create extends Command {
   init() {
     this.projectName = this._argv[0] || "";
-    this.force = !!this._cmd.force;
+    this.force = !!this._argv.options.force;
     log.verbose("projectName", this.projectName);
     log.verbose("force", this.force);
   }
@@ -391,7 +391,8 @@ class Create extends Command {
   }
 }
 
-function init(args) {
-  return new Create(args);
+function init(cmdOptions) {
+  console.log("cmdOptions", cmdOptions);
+  return new Create(cmdOptions);
 }
 module.exports = init;

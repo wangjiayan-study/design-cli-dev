@@ -24,9 +24,12 @@
     "url": "https://github.com/wangjiayan-study/design-cli-dev/issues"
   },
   "dependencies": {
+    "@design-cli-dev/utils": "^0.1.0-alpha.0",
+    "fs-extra": "^10.1.0",
+    "inquirer": "^9.1.1",
+    "simple-git": "^3.14.0",
     "userhome": "^1.0.0"
   },
-  "gitHead": "36696352f348c473a0ddf4c11d00e035ad7c1ef3",
   "publishConfig": {
     "access": "public"
   }

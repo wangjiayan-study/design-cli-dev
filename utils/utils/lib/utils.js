@@ -7,6 +7,7 @@ module.exports = {
   sleep,
   exec,
   execAsync,
+  readFile,
 };
 
 function sleep(timeout = 1000) {
@@ -38,4 +39,18 @@ function execAsync(command, commandArgs, options) {
       resolve(c);
     });
   });
+}
+
+function readFile(path) {
+  if (fs.existsSync(path)) {
+    const buffer = fs.readFileSync(path);
+    if (buffer) {
+      if (buffer.toJSON()) {
+        return buffer.toJSON();
+      } else if (buffer.toString()) {
+        return buffer.toString();
+      }
+    }
+  }
+  return null;
 }

@@ -14,7 +14,9 @@ const CACHE_DIR = "dependencies";
 async function exec() {
   try {
     const command = arguments[arguments.length - 1];
+    const commandOptions = arguments[arguments.length - 2];
     const commandName = command.name();
+    const commandArgs = arguments[0];
     const pkgName = PACKAGES_NAME[commandName];
     let homePath = process.env.CLI_HOME_PATH;
     // 指定定制包的路径
@@ -23,6 +25,7 @@ async function exec() {
     let storePath = "";
     const packageVersion = "latest";
     let pkg;
+
     if (!targetPath) {
       // 不指定的定制包路径话要读缓存的默认包，
       // 先得到包
@@ -61,21 +64,16 @@ async function exec() {
     log.verbose("rootFile", rootFile);
     if (rootFile) {
       // 优化：这里开启子进程去调用
-      const args = Array.from(arguments);
-      const cmd = args[args.length - 1];
-      const o = Object.create(null);
+
       // 因为这里是执行子模块，所以把父级命令行的参数都去掉
-      Object.keys(cmd).forEach((key) => {
-        if (
-          cmd.hasOwnProperty(key) &&
-          !key.startsWith("_") &&
-          key !== "parent"
-        ) {
-          o[key] = cmd[key];
-        }
-      });
-      args[args.length - 1] = o;
-      const code = `require('${rootFile}').call(null,${JSON.stringify(args)})`;
+      const cmdOptions = {
+        name: commandName,
+        args: commandArgs,
+        options: commandOptions,
+      };
+      const code = `require('${rootFile}').call(null,${JSON.stringify(
+        cmdOptions
+      )})`;
       // node直接执行代码：node -e require(xxx)
       const child = cp.spawn("node", ["-e", code], {
         // 子进程的工作目录

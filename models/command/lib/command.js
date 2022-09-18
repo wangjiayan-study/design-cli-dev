@@ -12,6 +12,7 @@ class Command {
     //   args: commandArgs,
     //   options: commandOptions,
     // };
+
     this._argv = argv;
     const runner = new Promise((resolve, reject) => {
       let chain = Promise.resolve();

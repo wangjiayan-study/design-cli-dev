@@ -8,6 +8,7 @@ module.exports = {
   exec,
   execAsync,
   readFile,
+  writeFile,
 };
 
 function sleep(timeout = 1000) {
@@ -41,13 +42,24 @@ function execAsync(command, commandArgs, options) {
   });
 }
 
-function readFile(path) {
-  if (fs.existsSync(path)) {
-    const buffer = fs.readFileSync(path);
+function writeFile(filePath, data, { rewrite = true } = {}) {
+  if (fs.existsSync(filePath) && !rewrite) {
+    return false;
+  } else {
+    fs.writeFileSync(filePath, data);
+    return true;
+  }
+}
+function readFile(filePath) {
+  if (fs.existsSync(filePath)) {
+    const buffer = fs.readFileSync(filePath, {
+      flags: true,
+      encoding: "UTF-8",
+    });
     if (buffer) {
-      if (buffer.toJSON()) {
+      if (buffer.toJSON) {
         return buffer.toJSON();
-      } else if (buffer.toString()) {
+      } else if (buffer.toString) {
         return buffer.toString();
       }
     }

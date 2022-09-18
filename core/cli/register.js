@@ -12,6 +12,8 @@ function registerCommander() {
   program
     .usage("<command>")
     .name(cliName)
+    .option("-tp, --targetPath <targetPath>", "指定自定义包的目录", "")
+    .option("-d, --debug", "是否开启debug模式", false)
     .description("搭建海报模板的脚手架项目")
     .version(version);
 
@@ -19,19 +21,15 @@ function registerCommander() {
     .command("create <appName>")
     .description("创建一个新项目")
     .option("-f, --force", "是否强制创建项目")
-    .option("-tp, --targetPath <targetPath>", "指定自定义包的目录", "")
-    .option("-d, --debug", "是否开启debug模式", false)
     .showHelpAfterError()
     .action(exec);
   program
     .command("publish")
     .description("将创建的项目推送到远程仓库")
     .showHelpAfterError()
-    .option("-tp, --targetPath <targetPath>", "指定自定义包的目录", "")
     .option("-r,--refreshServer", "强制更新远程Git仓库")
     .option("--refreshToken", "强制更新远程仓库token")
     .option("--refreshOwner", "强制更新远程仓库类型")
-    .option("-d, --debug", "是否开启debug模式", false)
     .action(exec);
   //对debug参数进行监听
   program.on("option:debug", function () {
@@ -42,7 +40,6 @@ function registerCommander() {
   program.on("option:targetPath", function () {
     process.env.CLI_TARGET_PATH = this.opts().targetPath;
   });
-  program.parse(process.argv);
 
   // 对未知命令进行监听。
   // 注意，未知的命令才会走command:*

@@ -5,11 +5,11 @@ const Git = require("@design-cli-dev/git");
 const path = require("node:path");
 const fileExists = require("file-exists");
 const fse = require("fs-extra");
-
 class Publish extends Command {
   init() {
-    // 处理参数
-    console.log("处理参数this._argv", this._argv);
+    const { refreshServer, refreshToken } = this._argv.options || {};
+    this.refreshServer = refreshServer;
+    this.refreshToken = refreshToken;
   }
   async exec() {
     try {
@@ -17,8 +17,11 @@ class Publish extends Command {
       // 1、项目发布前初始化检查
       await this.prepare();
       // 2、git flow自动化
-      const git = new Git(this.projectInfo, { refreshServer: false });
-      await prepare();
+      const git = new Git(this.projectInfo, {
+        refreshServer: this.refreshServer,
+        refreshToken: this.refreshToken,
+      });
+      await git.prepare();
       // 3、云构建和云发布
       const endTime = new Date().getTime();
       log.info("本次发布耗时", Math.floor((endTime - starTime) / 1000));
@@ -28,8 +31,6 @@ class Publish extends Command {
         console.log(e);
       }
     }
-
-    console.log("exec");
   }
   async prepare() {
     // 1、确定当前项目是否是npm 项目：是否包含package.json文件
@@ -40,7 +41,7 @@ class Publish extends Command {
     }
 
     // 2、确定是否是name,version,build命令：确保云构建云发布阶段顺利进行
-    const { name, version, scripts } = fse.readJSONSync(pkgPath);
+    const { name, version } = fse.readJSONSync(pkgPath);
     const { build } = scripts || {};
     if (!name || !version || !build) {
       throw new Error("项目的package.json缺少 scripts build字段");

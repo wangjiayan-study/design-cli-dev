@@ -25,7 +25,6 @@ async function exec() {
     let storePath = "";
     const packageVersion = "latest";
     let pkg;
-
     if (!targetPath) {
       // 不指定的定制包路径话要读缓存的默认包，
       // 先得到包
@@ -69,28 +68,29 @@ async function exec() {
       const cmdOptions = {
         name: commandName,
         args: commandArgs,
-        options: commandOptions,
+        options: { ...commandOptions, targetPath },
       };
-      const code = `require('${rootFile}').call(null,${JSON.stringify(
-        cmdOptions
-      )})`;
+      // const code = `require('${rootFile}').call(null,${JSON.stringify(
+      //   cmdOptions
+      // )})`;
+      require(rootFile).call(null, JSON.stringify(cmdOptions));
       // node直接执行代码：node -e require(xxx)
-      const child = cp.spawn("node", ["-e", code], {
-        // 子进程的工作目录
-        cwd: process.cwd(),
-        // inherit:通过相应的标准输入输出流到/从父进程
-        // 如果是ignore,就只能执行命令，不能输入输出
-        // pipe 的话，子进程只能读不能写，是单向的。
-        stdio: "inherit",
-      });
-      child.on("error", (e) => {
-        log.error(e.message);
-        process.exit(1);
-      });
-      child.on("exit", (e) => {
-        log.verbose("命令执行成功:" + e);
-        process.exit(e);
-      });
+      // const child = cp.spawn("node", ["-e", code], {
+      //   // 子进程的工作目录
+      //   cwd: process.cwd(),
+      //   // inherit:通过相应的标准输入输出流到/从父进程
+      //   // 如果是ignore,就只能执行命令，不能输入输出
+      //   // pipe 的话，子进程只能读不能写，是单向的。
+      //   stdio: "inherit",
+      // });
+      // child.on("error", (e) => {
+      //   log.error(e.message);
+      //   process.exit(1);
+      // });
+      // child.on("exit", (e) => {
+      //   log.verbose("命令执行成功:" + e);
+      //   process.exit(e);
+      // });
     } else {
       log.error("找不到npm包的入口文件", `请检查包${pkgName}是否指定入口文件`);
     }

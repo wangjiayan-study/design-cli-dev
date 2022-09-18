@@ -18,8 +18,9 @@ const userHome = userhome();
 
 class Create extends Command {
   init() {
-    this.projectName = this._argv[0] || "";
-    this.force = !!this._argv.options.force;
+    console.log("this._argv.", this._argv);
+    this.projectName = this._argv?.name;
+    this.force = !!this._argv.options?.force;
     log.verbose("projectName", this.projectName);
     log.verbose("force", this.force);
   }
@@ -211,7 +212,6 @@ class Create extends Command {
   }
   async installDefaultTpl() {
     // 1、复制模板到本地路径
-    console.log("cacheFilePath", this.templateNpm.cacheFilePath);
     const sourcePath = path.resolve(this.templateNpm.cacheFilePath, "template");
     await fse.copy(sourcePath, process.cwd());
     log.verbose("模板已经复制到当前目录");
@@ -392,7 +392,6 @@ class Create extends Command {
 }
 
 function init(cmdOptions) {
-  console.log("cmdOptions", cmdOptions);
   return new Create(cmdOptions);
 }
 module.exports = init;

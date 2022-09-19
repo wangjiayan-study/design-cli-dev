@@ -94,7 +94,10 @@ async function exec() {
     } else {
       log.error("找不到npm包的入口文件", `请检查包${pkgName}是否指定入口文件`);
     }
-  } catch (err) {
-    throw new Error(err);
+  } catch (e) {
+    log.error(e.message);
+    if (process.env.LOG_LEVEL === "verbose") {
+      console.log(e);
+    }
   }
 }

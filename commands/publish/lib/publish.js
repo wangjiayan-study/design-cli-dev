@@ -2,6 +2,7 @@
 const Command = require("@design-cli-dev/command");
 const log = require("@design-cli-dev/logs");
 const Git = require("@design-cli-dev/git");
+const fs = require("node:fs");
 const path = require("node:path");
 const fileExists = require("file-exists");
 const fse = require("fs-extra");
@@ -22,6 +23,7 @@ class Publish extends Command {
         refreshToken: this.refreshToken,
       });
       await git.prepare();
+      await git.commit();
       // 3、云构建和云发布
       const endTime = new Date().getTime();
       log.info("本次发布耗时", Math.floor((endTime - starTime) / 1000));
@@ -41,7 +43,7 @@ class Publish extends Command {
     }
 
     // 2、确定是否是name,version,build命令：确保云构建云发布阶段顺利进行
-    const { name, version } = fse.readJSONSync(pkgPath);
+    const { name, version, scripts } = fse.readJSONSync(pkgPath);
     const { build } = scripts || {};
     if (!name || !version || !build) {
       throw new Error("项目的package.json缺少 scripts build字段");

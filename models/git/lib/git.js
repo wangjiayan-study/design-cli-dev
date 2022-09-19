@@ -4,6 +4,7 @@ const fse = require("fs-extra");
 const userhome = require("userhome");
 const log = require("@design-cli-dev/logs");
 const inquirer = require("inquirer");
+const fs = require("node:fs");
 const path = require("node:path");
 const { readFile, writeFile, spinnerStart } = require("@design-cli-dev/utils");
 const terminalLink = require("terminal-link");
@@ -15,6 +16,7 @@ const GIT_SERVER_FILE = ".git_server";
 // 在用户主目录下放一个.git文件夹里面存放git相关的变量
 const GIT_ROOT_DIR = ".git";
 const GIT_TOKEN_FILE = ".git_token";
+const GIT_IGNORE_FILE = ".gitignore";
 const GITHUB = "github";
 const GITEE = "gitee";
 const GIT_OWN_FILE = ".git_own";
@@ -69,6 +71,8 @@ class Git {
     this.orgs = null; // 用户所属组织列表
     this.owner = null; //远程仓库类型
     this.login = null; // 远程仓库登录名
+    this.remotes = null; // 远程仓库origin,是个数组
+    this.branch = null;
   }
   async prepare() {
     //1、检查缓存主目录
@@ -84,29 +88,156 @@ class Git {
     await this.checkRepoType();
     // 6、检查并创建远程仓库
     await this.checkRepo();
-    // 7、完成本地仓库初始化
+    // 7 检查并创建.gitignore文件
+    this.checkGitIgnore();
+    // 8、完成本地仓库初始化
     await this.init();
   }
   async init() {
-    // 1、生成远程仓库
-    // 添加远程仓库
-    // git init
-    await this.gitInit();
+    try {
+      // 1、生成远程仓库
+      // 添加远程仓库
+      // git init
+      await this.gitInit();
+      await this.initCommit();
+    } catch (e) {
+      log.error(e.message);
+      if (process.env.LOG_LEVEL === "verbose") {
+        console.log(e);
+      }
+    }
+  }
+  async commit() {
+    // 1.生成开发分支
+    await this.getCorrectVersion();
+    // 2.检查stash区
+    await this.checkStash();
+    // 3.检查代码冲突
+    await this.checkConflicted();
+    // 4.切换开发分支
+    await this.checkoutBranch(this.branch);
+    // 5.合并远程master分支和开发分支代码
+    await this.pullRemoteMasterAndBranch();
+    // 6.将开发分支推送到远程仓库
+    await this.pushRemoteRepo(this.branch);
+  }
+  async pullRemoteMasterAndBranch() {
+    log.info(`合并 [master] -> [${this.branch}]`);
+    await this.pullRemoteRepo("master");
+    log.success("合并远程 [master] 分支代码成功");
+    await this.checkConflicted();
+    log.info("检查远程开发分支");
+    const remoteBranchList = await this.getRemoteBranchList();
+    if (remoteBranchList.indexOf(this.version) >= 0) {
+      log.info(`合并 [${this.branch}] -> [${this.branch}]`);
+      await this.pullRemoteRepo(this.branch);
+      log.success(`合并远程 [${this.branch}] 分支代码成功`);
+      await this.checkConflicted();
+    } else {
+      log.success(`不存在远程分支 [${this.branch}]`);
+    }
+  }
+  async checkoutBranch(branch) {
+    const localBranchList = await this.git.branchLocal();
+    if (localBranchList.all.indexOf(branch) >= 0) {
+      await this.git.checkout(branch);
+    } else {
+      await this.git.checkoutLocalBranch(branch);
+    }
+    log.success(`分支切换到${branch}`);
+  }
+  async checkStash() {
+    log.info("检查stash记录");
+    const stashList = await this.git.stashList();
+    if (stashList.all.length > 0) {
+      await this.git.stash(["pop"]);
+      log.success("stash pop成功");
+    }
+  }
+  async pullRemoteRepo(branchName, options) {
+    log.info(`同步远程${branchName}分支代码`);
+    await this.git.pull("origin", branchName, options).catch((err) => {
+      log.error(err.message);
+    });
   }
   async gitInit() {
     const gitPath = path.resolve(this.dir, GIT_ROOT_DIR);
     if (!fs.existsSync(gitPath)) {
       // 有.git 文件 说明已经初始化过了，不用继续下面流程
+      log.info("执行git初始化");
       await this.git.init();
     }
     this.remote = this.gitServer.getRemote(this.login, this.projectName);
     // 先查看有没有远程origins
-    const remoteList = this.git.remote(["-v"]);
-    log.verbose("git remotes", remoteList);
-    // if (!remoteList.find((item) => item.name === "origin")) {
-    //   await this.git.addRemote("origin", this.remote);
-    //   log.notice("git初始化成功", this.remote);
-    // }
+    const remotes = await this.git.getRemotes();
+    log.verbose("git remotes", remotes);
+    if (!remotes.find((item) => item.name === "origin")) {
+      await this.git.addRemote("origin", this.remote);
+      log.notice("git初始化成功", this.remote);
+      await this.git.branch("-M master");
+      await this.git.push("origin", "master", { "--set-upstream": "true" });
+    }
+  }
+  async initCommit() {
+    await this.checkConflicted();
+    // 检查没有冲突，会把没有提交的提交上去
+    await this.checkNotCommitted();
+    if (await this.checkRemoteMaster()) {
+      // 有远程master话先拉远程的先拉下来
+      await this.pullRemoteRepo("master", {
+        "--allow-unrelated-histories": null,
+      });
+    } else {
+      // 没有远程分支就先创建本地分支，并且提交到master
+      await this.pushRemoteRepo("master");
+    }
+  }
+  async pushRemoteRepo(branchName) {
+    log.info(`推送代码至${branchName}分支`);
+    await this.git.push("origin", branchName);
+    log.success("推送代码成功");
+  }
+  async checkRemoteMaster() {
+    return (
+      (await this.git.listRemote(["--refs"])).indexOf("refs/heads/master") >= 0
+    );
+  }
+  async checkConflicted() {
+    log.info("代码冲突检查");
+    const status = await this.git.status();
+    if (status.conflicted.length > 0) {
+      throw new Error("当前代码存在冲突，请手动处理合并后再试！");
+    }
+    log.success("代码冲突检查通过");
+  }
+  async checkNotCommitted() {
+    const status = await this.git.status();
+    if (
+      status.not_added.length > 0 ||
+      status.created.length > 0 ||
+      status.deleted.length > 0 ||
+      status.modified.length > 0 ||
+      status.renamed.length > 0
+    ) {
+      log.verbose("status", status);
+      await this.git.add(status.not_added);
+      await this.git.add(status.created);
+      await this.git.add(status.deleted);
+      await this.git.add(status.modified);
+      await this.git.add(status.renamed);
+      let message;
+      while (!message) {
+        message = (
+          await inquirer.prompt({
+            type: "text",
+            name: "message",
+            message: "请输入commit信息：",
+          })
+        ).message;
+      }
+      await this.git.commit(message);
+      log.success("本次commit提交成功");
+    }
   }
   async checkRepo() {
     let repo = await this.gitServer.getRepo(this.login, this.projectName);
@@ -270,14 +401,114 @@ class Git {
     return null;
   }
 
-  commit() {
-    //1、生成开发分支
-    this.getCurrentVersion();
-    //2、在开发分支提交代码
-    //3、合并远程开发分支
-    //4、推送开发分支
+  async getCorrectVersion() {
+    // 1、获取远程分支的版本号
+    const remoteBranchList = this.getRemoteBranchList();
+    let releaseVersion = null;
+    if (remoteBranchList && remoteBranchList.length > 0) {
+      releaseVersion = remoteBranchList[0];
+    }
+    log.verbose("线上最新版本号", releaseVersion);
+    // 2、生成本地开发分支
+    if (!releaseVersion || semver.gt(this.version, releaseVersion)) {
+      this.branch = `${VERSION_DEVELOP}/${this.version}`;
+      log.verbose("当前开发分支", this.branch);
+    } else {
+      log.info("当前线上版本大于本地版本", `${releaseVersion} > ${devVersion}`);
+      const incType = (
+        await inquirer.prompt({
+          type: "list",
+          name: "incType",
+          message: "自动升级版本，请选择升级版本类型",
+          default: "patch",
+          choices: [
+            {
+              name: `小版本（${releaseVersion} -> ${semver.inc(
+                releaseVersion,
+                "patch"
+              )}）`,
+              value: "patch",
+            },
+            {
+              name: `中版本（${releaseVersion} -> ${semver.inc(
+                releaseVersion,
+                "minor"
+              )}）`,
+              value: "minor",
+            },
+            {
+              name: `大版本（${releaseVersion} -> ${semver.inc(
+                releaseVersion,
+                "major"
+              )}）`,
+              value: "major",
+            },
+          ],
+        })
+      ).incType;
+      const incVersion = semver.inc(releaseVersion, incType);
+      this.branch = `${VERSION_DEVELOP}/${incVersion}`;
+      this.version = incVersion;
+    }
   }
-  getCurrentVersion() {}
+  async getRemoteBranchList(type) {
+    const remoteList = await this.git.listRemote(["--refs"]);
+    let reg;
+    if (type === VERSION_RELEASE) {
+      reg = /.+?refs\/tags\/release\/(\d+\.\d+\.\d+)/g;
+    } else {
+      reg = /.+?refs\/heads\/dev\/(\d+\.\d+\.\d+)/g;
+    }
+    return remoteList
+      .split("\n")
+      .map((remote) => {
+        const match = reg.exec(remote);
+        reg.lastIndex = 0;
+        if (match && semver.valid(match[1])) {
+          return match[1];
+        }
+      })
+      .filter((_) => _)
+      .sort((a, b) => {
+        if (semver.lte(b, a)) {
+          if (a === b) return 0;
+          return -1;
+        }
+        return 1;
+      });
+  }
+  checkGitIgnore() {
+    const gitIgnore = path.resolve(this.dir, GIT_IGNORE_FILE);
+    if (!fs.existsSync(gitIgnore)) {
+      writeFile(
+        gitIgnore,
+        `.DS_Store
+node_modules
+/dist
+
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?`
+      );
+      log.success(`自动写入${GIT_IGNORE_FILE}文件成功`);
+    }
+  }
 }
 
 module.exports = Git;

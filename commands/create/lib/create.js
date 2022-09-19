@@ -8,6 +8,7 @@ const semver = require("semver");
 const getProjectTemplate = require("./getProjectTemplate");
 const Package = require("@design-cli-dev/package");
 const userhome = require("userhome");
+const path = require("node:path");
 const glob = require("glob");
 const { spinnerStart, sleep, execAsync } = require("@design-cli-dev/utils");
 const ejs = require("ejs");
@@ -18,10 +19,8 @@ const userHome = userhome();
 
 class Create extends Command {
   init() {
-    console.log("this._argv.", this._argv);
-    this.projectName = this._argv?.name;
+    this.projectName = this._argv?.args;
     this.force = !!this._argv.options?.force;
-    log.verbose("projectName", this.projectName);
     log.verbose("force", this.force);
   }
   async exec() {
@@ -32,8 +31,11 @@ class Create extends Command {
       await this.downloadTemplate();
       // 3. 安装模板：把模板复制到执行目录，并执行安装和启动
       await this.installTemplate();
-    } catch (err) {
-      throw new Error(err);
+    } catch (e) {
+      log.error(e.message);
+      if (process.env.LOG_LEVEL === "verbose") {
+        console.log(e);
+      }
     }
   }
   /**
@@ -228,6 +230,8 @@ class Create extends Command {
   async ejsRender(options) {
     const dir = process.cwd();
     const projectInfo = this.projectInfo;
+    console.log("projectInfo", projectInfo);
+    console.log();
     return new Promise((resolve, reject) => {
       glob(
         "**",
